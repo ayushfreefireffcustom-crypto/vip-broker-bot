@@ -9,19 +9,18 @@ import { commandsFeature } from './handlers/commands.js';
 import { onboardingFeature } from './handlers/onboarding.js';
 import { brokerFeature } from './handlers/broker.js';
 import { contactScreenshotFeature } from './handlers/contact-screenshot.js';
+import { adminFeature } from './handlers/admin.js';
 
 export function createBot(token: string, config?: BotConfig<BotContext>): Bot<BotContext> {
   const bot = new Bot<BotContext>(token, config);
 
   bot.use(withSession);
+  bot.use(adminFeature); // admin-group Approve/Reject callbacks
   bot.use(startFeature);
   bot.use(commandsFeature); // /cancel — must interrupt from any state
   bot.use(onboardingFeature);
   bot.use(brokerFeature);
   bot.use(contactScreenshotFeature);
-
-  // More feature composers mount here as phases land:
-  //   bot.use(adminFeature);
 
   return bot;
 }
