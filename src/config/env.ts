@@ -25,6 +25,10 @@ const schema = z.object({
   MIN_VOLUME_LOTS: z.coerce.number().nonnegative().default(0.1),
   LIST_STALE_MINUTES: z.coerce.number().int().positive().default(180),
 
+  // Sync worker — directory of per-broker CSV exports (<broker>.csv) and cadence.
+  SYNC_CSV_DIR: z.string().default('./data'),
+  SYNC_INTERVAL_MINUTES: z.coerce.number().int().positive().default(30),
+
   // Optional per-broker helper images (file_id or https URL) shown when a user
   // picks a broker — "where to find your UID/email". Empty = send a text prompt.
   HELP_IMAGE_VANTAGE: z.string().default(''),
