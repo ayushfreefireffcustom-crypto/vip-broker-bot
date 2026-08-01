@@ -18,3 +18,22 @@ export function validatePhone(raw: string): Validated {
   if (!/^\+?\d{8,15}$/.test(stripped)) return { ok: false };
   return { ok: true, value: stripped.startsWith('+') ? stripped : `+${stripped}` };
 }
+
+/** Broker UID / account number: 4–20 alphanumerics. Returned trimmed. */
+export function validateUid(raw: string): Validated {
+  const value = raw.trim();
+  if (!/^[A-Za-z0-9]{4,20}$/.test(value)) return { ok: false };
+  return { ok: true, value };
+}
+
+/** Account email. Returned lowercased/trimmed. */
+export function validateEmail(raw: string): Validated {
+  const value = raw.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { ok: false };
+  return { ok: true, value };
+}
+
+/** Validate the identifier a broker expects (uid vs email). */
+export function validateIdentifier(idType: 'uid' | 'email', raw: string): Validated {
+  return idType === 'email' ? validateEmail(raw) : validateUid(raw);
+}
