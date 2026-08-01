@@ -17,5 +17,17 @@ export const copy = {
 
   askName: () => `Great — let's get you set up.\n\nWhat's your <b>full name</b>?`,
 
+  invalidName: () => `Please enter a valid name (letters, 2–80 characters).`,
+
+  askPhone: (name: string) =>
+    `Thanks, <b>${name}</b>! 📱\n\n` +
+    `Now enter your <b>phone number</b> with country code — e.g. <code>+1 555 123 4567</code>.`,
+
+  invalidPhone: () => `Please enter a valid phone number with country code, e.g. <code>+1 555 123 4567</code>.`,
+
+  onboardingDone: () =>
+    `✅ You're all set!\n\n` +
+    `<i>By continuing you agree to our terms. We use your details only to verify your broker account.</i>`,
+
   chooseBroker: () => `Welcome! Please choose your <b>broker</b> to proceed.`,
 };
