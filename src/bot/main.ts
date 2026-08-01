@@ -7,6 +7,7 @@ import { env } from '../config/env.js';
 import { logger } from '../lib/logger.js';
 import { prisma } from '../db/prisma.js';
 import { createBot } from './bot.js';
+import { runReminders } from './reminders.js';
 
 const WEBHOOK_PATH = '/webhook';
 
@@ -37,8 +38,14 @@ async function main(): Promise<void> {
     void bot.start({ onStart: (me) => logger.info({ username: me.username }, 'bot polling') });
   }
 
+  // Stalled-funnel reminder tick.
+  const reminderTimer = setInterval(() => {
+    void runReminders(bot.api).catch((err) => logger.error(err, 'reminder tick error'));
+  }, env.REMINDER_INTERVAL_MINUTES * 60_000);
+
   const shutdown = async (sig: string): Promise<void> => {
     logger.info({ sig }, 'shutting down');
+    clearInterval(reminderTimer);
     server.close();
     if (env.BOT_MODE === 'poll') await bot.stop();
     await prisma.$disconnect();
