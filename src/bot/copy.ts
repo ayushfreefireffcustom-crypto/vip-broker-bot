@@ -30,4 +30,18 @@ export const copy = {
     `<i>By continuing you agree to our terms. We use your details only to verify your broker account.</i>`,
 
   chooseBroker: () => `Welcome! Please choose your <b>broker</b> to proceed.`,
+
+  askUid: (label: string) =>
+    `Please send your <b>${label} UID</b> (account number).\n\nType /cancel to abort.`,
+
+  askEmail: (label: string) =>
+    `Please send your <b>${label} account email</b>.\n\nType /cancel to abort.`,
+
+  invalidUid: (label: string) => `That doesn't look like a valid ${label} UID. Please send digits/letters only (4–20 chars).`,
+
+  invalidEmail: () => `That doesn't look like a valid email. Please try again.`,
+
+  checking: () => `⏳ <b>Checking your account…</b>\n\nThis can take a few seconds.`,
+
+  cancelled: () => `Process cancelled.`,
 };
