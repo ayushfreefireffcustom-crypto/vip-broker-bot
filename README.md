@@ -44,12 +44,32 @@ verification funnel, not any specific brand's identity.
 3. `pnpm db:migrate` to create the schema.
 4. `pnpm bot:dev` for local long-polling development.
 
+## Admin
+
+Admins (Telegram ids in `ADMIN_IDS`) operate from the admin group:
+
+- Each pending case posts a card (screenshot + details) with **✅ Approve / ❌ Reject**.
+- **Upload `<broker>.csv`** to the bot to refresh that broker's referred-clients list.
+- **`/pending`** — list open cases. **`/stats`** — funnel counts + list freshness.
+
 ## Testing
 
-`pnpm test` — handlers are tested offline by feeding fake updates through a mock
-that intercepts outgoing Telegram API calls, so no live bot token is needed.
+`pnpm test` — every handler is tested offline by feeding fabricated updates through
+a mock that intercepts outgoing Telegram API calls and an in-memory Prisma fake, so
+no live token or database is needed. `test/e2e.test.ts` walks the whole funnel.
+
+## Deploy
+
+Runs as **two processes** (e.g. two Railway services sharing one Postgres):
+
+- `pnpm bot` — the bot (set `BOT_MODE=webhook` + `WEBHOOK_DOMAIN` in prod).
+- `pnpm sync` — the referred-clients sync worker (on the VPS with portal access).
+
+Apply migrations with `pnpm db:deploy`. Migrations are **additive only**.
 
 ## Constraints
 
 - Additive migrations only.
 - Do not push until told (deploys are triggered on push).
+- Our own brand — this bot replicates a verification funnel's function, not any
+  specific brand's identity.
