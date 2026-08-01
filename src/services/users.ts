@@ -11,9 +11,14 @@ export async function isOnboarded(id: bigint): Promise<boolean> {
   return u?.onboardedAt != null;
 }
 
-/** Finish onboarding: record name + phone and stamp onboardedAt. */
-export function completeOnboarding(id: bigint, name: string, phone: string) {
-  return prisma.botUser.update({ where: { id }, data: { name, phone, onboardedAt: new Date() } });
+/** Onboarding step 1 — record the name. */
+export function setName(id: bigint, name: string) {
+  return prisma.botUser.update({ where: { id }, data: { name } });
+}
+
+/** Onboarding step 2 — record the phone and stamp onboardedAt (marks it complete). */
+export function completeOnboarding(id: bigint, phone: string) {
+  return prisma.botUser.update({ where: { id }, data: { phone, onboardedAt: new Date() } });
 }
 
 export function setContactShared(id: bigint) {
