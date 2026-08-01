@@ -62,5 +62,13 @@ export const copy = {
     `Minimum: deposit $${env.MIN_DEPOSIT_USD}, volume ${env.MIN_VOLUME_LOTS} lots.\n` +
     `Top up / trade, then send your UID again to re-check.`,
 
+  contactThanks: (label: string) =>
+    `✅ Thanks!\n\nNow upload a <b>screenshot from ${label}</b> that clearly shows your <b>account balance</b>.`,
+
+  needPhoto: () => `Please upload a <b>photo</b> screenshot (send it as a photo, not a file).`,
+
+  receivedPending: () =>
+    `✅ <b>Received!</b>\n\nOur team will review your submission and get back to you shortly. You'll be notified here.`,
+
   cancelled: () => `Process cancelled.`,
 };
