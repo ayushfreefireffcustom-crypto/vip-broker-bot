@@ -43,5 +43,24 @@ export const copy = {
 
   checking: () => `⏳ <b>Checking your account…</b>\n\nThis can take a few seconds.`,
 
+  shareContactButton: '📱 Share Contact',
+
+  verifiedShareContact: () =>
+    `✅ <b>Verified!</b>\n\nTap the button below to share your contact and continue.`,
+
+  manualReview: () =>
+    `🔎 <b>Almost there.</b>\n\nWe'll verify your account manually. Tap below to share your contact and continue.`,
+
+  notUnderLink: (label: string, ref: string) =>
+    `❌ We couldn't find your <b>${label}</b> account under our partner link.\n\n` +
+    (ref
+      ? `Please register or transfer using our link, then send your UID again:\n${ref}`
+      : `Please make sure your account is registered under our partner link, then send your UID again.`),
+
+  notEligible: (reasons: string[]) =>
+    `⚠️ Your account doesn't meet the requirements yet:\n• ${reasons.join('\n• ')}\n\n` +
+    `Minimum: deposit $${env.MIN_DEPOSIT_USD}, volume ${env.MIN_VOLUME_LOTS} lots.\n` +
+    `Top up / trade, then send your UID again to re-check.`,
+
   cancelled: () => `Process cancelled.`,
 };
