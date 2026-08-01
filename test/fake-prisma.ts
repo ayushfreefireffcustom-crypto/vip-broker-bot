@@ -103,7 +103,7 @@ class Table {
     if (this.opts.autoId && row[this.opts.pk] == null) row[this.opts.pk] = randomUUID();
     const now = new Date();
     if (row['createdAt'] == null) row['createdAt'] = now;
-    if (this.opts.hasUpdatedAt) row['updatedAt'] = now;
+    if (this.opts.hasUpdatedAt && row['updatedAt'] == null) row['updatedAt'] = now;
     return row;
   }
 
@@ -169,14 +169,15 @@ class Table {
         row[k] = v;
       }
     }
-    if (this.opts.hasUpdatedAt) row['updatedAt'] = new Date();
+    // Respect an explicitly-provided updatedAt (tests use it to back-date rows).
+    if (this.opts.hasUpdatedAt && !('updatedAt' in data)) row['updatedAt'] = new Date();
   }
 }
 
 function buildTables() {
   return {
     botUser: new Table({ pk: 'id', hasUpdatedAt: true, defaults: () => ({ contactShared: false, name: null, phone: null, username: null, onboardedAt: null }) }),
-    funnelSession: new Table({ pk: 'userId', hasUpdatedAt: true, defaults: () => ({ state: 'idle', broker: null, identifier: null, screenshotFileId: null }) }),
+    funnelSession: new Table({ pk: 'userId', hasUpdatedAt: true, defaults: () => ({ state: 'idle', broker: null, identifier: null, screenshotFileId: null, remindedAt: null }) }),
     verification: new Table({ pk: 'id', autoId: true, defaults: () => ({ found: false, eligible: false, status: 'pending_admin', deposits: null, volumeLots: null, screenshotFileId: null, adminMessageId: null, decidedBy: null, decidedAt: null }) }),
     referredClient: new Table({ pk: 'id', autoId: true, defaults: () => ({ deposits: null, volumeLots: null, syncedAt: new Date() }) }),
     channelGrant: new Table({ pk: 'id', autoId: true, defaults: () => ({ joined: false, expiresAt: null }) }),
