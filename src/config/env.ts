@@ -29,6 +29,12 @@ const schema = z.object({
   SYNC_CSV_DIR: z.string().default('./data'),
   SYNC_INTERVAL_MINUTES: z.coerce.number().int().positive().default(30),
 
+  // Rate limiting (per user) + stalled-funnel reminders.
+  RATE_WINDOW_MS: z.coerce.number().int().positive().default(10_000),
+  RATE_MAX: z.coerce.number().int().positive().default(12),
+  STALE_FUNNEL_MINUTES: z.coerce.number().int().positive().default(120),
+  REMINDER_INTERVAL_MINUTES: z.coerce.number().int().positive().default(60),
+
   // Optional per-broker helper images (file_id or https URL) shown when a user
   // picks a broker — "where to find your UID/email". Empty = send a text prompt.
   HELP_IMAGE_VANTAGE: z.string().default(''),
