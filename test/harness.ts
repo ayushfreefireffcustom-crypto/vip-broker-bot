@@ -115,6 +115,19 @@ export function photoUpdate(fileId: string, from: User = user(1)): Update {
   };
 }
 
+export function documentUpdate(fileId: string, fileName: string, from: User = user(1)): Update {
+  return {
+    update_id: updateSeq++,
+    message: {
+      message_id: ++msgSeq,
+      date: Math.floor(Date.now() / 1000),
+      chat: privateChat(from),
+      from,
+      document: { file_id: fileId, file_unique_id: `${fileId}_u`, file_name: fileName },
+    },
+  };
+}
+
 export function callbackUpdate(data: string, from: User = user(1)): Update {
   return {
     update_id: updateSeq++,
