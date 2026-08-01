@@ -1,0 +1,103 @@
+// VIP broker-verification bot — data model.
+// Explicit DB-backed FSM: FunnelSession holds each user's current step so a
+// restart never drops a mid-funnel user, and admin approval is just another state.
+// String "enums" (not Prisma enums) keep migrations additive and flexible.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The person interacting with the bot (keyed by Telegram user id).
+model BotUser {
+  id            BigInt    @id // telegram user id
+  name          String?
+  phone         String?
+  username      String?
+  contactShared Boolean   @default(false)
+  onboardedAt   DateTime? // set once name + phone + consent are done
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  session       FunnelSession?
+  verifications Verification[]
+  grants        ChannelGrant[]
+
+  @@map("bot_user")
+}
+
+/// The live finite-state-machine row — one per user. `state` drives routing of
+/// the next incoming update. broker/identifier/screenshot accumulate as the user
+/// advances. See src/bot/flows for the state constants.
+model FunnelSession {
+  userId           BigInt   @id
+  state            String   @default("idle")
+  broker           String? // vantage | exness | xm
+  identifier       String? // UID (vantage/xm) or email (exness)
+  screenshotFileId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user BotUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([state])
+  @@map("funnel_session")
+}
+
+/// Audit + admin-decision record for one verification attempt.
+model Verification {
+  id               String    @id @default(cuid())
+  userId           BigInt
+  broker           String
+  identifier       String
+  found            Boolean   @default(false) // matched a referred_clients row
+  deposits         Decimal?  @db.Decimal(18, 2)
+  volumeLots       Decimal?  @db.Decimal(18, 4)
+  eligible         Boolean   @default(false)
+  status           String    @default("pending_admin") // pending_admin | approved | rejected
+  screenshotFileId String?
+  adminMessageId   Int? // message id of the admin-group card, so we can edit it
+  decidedBy        BigInt?
+  decidedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  user BotUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("verification")
+}
+
+/// Synced snapshot of clients under our IB/partner link. The bot's "checking"
+/// step reads this table only — the sync worker keeps it fresh out of band.
+model ReferredClient {
+  id         String   @id @default(cuid())
+  broker     String
+  identifier String // normalized (lowercased) UID or email
+  deposits   Decimal? @db.Decimal(18, 2)
+  volumeLots Decimal? @db.Decimal(18, 4)
+  syncedAt   DateTime @default(now())
+
+  @@unique([broker, identifier])
+  @@index([broker])
+  @@map("referred_client")
+}
+
+/// A single-use invite link issued to an approved user.
+model ChannelGrant {
+  id         String    @id @default(cuid())
+  userId     BigInt
+  inviteLink String
+  expiresAt  DateTime?
+  joined     Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  user BotUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("channel_grant")
+}
