@@ -25,6 +25,12 @@ const schema = z.object({
   MIN_VOLUME_LOTS: z.coerce.number().nonnegative().default(0.1),
   LIST_STALE_MINUTES: z.coerce.number().int().positive().default(180),
 
+  // Optional per-broker helper images (file_id or https URL) shown when a user
+  // picks a broker — "where to find your UID/email". Empty = send a text prompt.
+  HELP_IMAGE_VANTAGE: z.string().default(''),
+  HELP_IMAGE_EXNESS: z.string().default(''),
+  HELP_IMAGE_XM: z.string().default(''),
+
   // Brand + logging
   BRAND_NAME: z.string().min(1).default('VIP Access'),
   LOG_LEVEL: z.string().default('info'),
