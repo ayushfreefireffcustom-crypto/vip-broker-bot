@@ -78,5 +78,10 @@ export const copy = {
     `❌ <b>Verification not approved.</b>\n\n` +
     `We couldn't approve your submission. If you believe this is a mistake, re-check your details and try again with /start.`,
 
+  slowDown: () => `⏳ You're going a bit fast — please wait a moment and try again.`,
+
+  reminder: () =>
+    `👋 Still there? You have a verification in progress.\n\nSend the requested info to continue, or /start to begin again.`,
+
   cancelled: () => `Process cancelled.`,
 };
