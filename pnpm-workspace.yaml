@@ -1,0 +1,7 @@
+# Single-package repo. As of pnpm 10+ the build-script allowlist lives here
+# (moved out of package.json). Prisma/esbuild need their postinstall to build engines.
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  esbuild: true
+  prisma: true
