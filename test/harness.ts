@@ -74,10 +74,19 @@ function privateChat(u: User) {
 }
 
 export function textUpdate(text: string, from: User = user(1)): Update {
-  return {
-    update_id: updateSeq++,
-    message: { message_id: ++msgSeq, date: Math.floor(Date.now() / 1000), chat: privateChat(from), from, text },
+  const message: Update['message'] = {
+    message_id: ++msgSeq,
+    date: Math.floor(Date.now() / 1000),
+    chat: privateChat(from),
+    from,
+    text,
   };
+  // grammY matches commands via a leading bot_command entity — add one for "/…".
+  if (text.startsWith('/')) {
+    const length = text.split(/\s/)[0]!.length;
+    message.entities = [{ type: 'bot_command', offset: 0, length }];
+  }
+  return { update_id: updateSeq++, message };
 }
 
 export function contactUpdate(phone: string, from: User = user(1)): Update {
