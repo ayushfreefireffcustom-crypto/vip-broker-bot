@@ -9,6 +9,7 @@ import { prisma } from '../db/prisma.js';
 import { logger } from '../lib/logger.js';
 import { copy } from '../bot/copy.js';
 import { State } from '../bot/flows/state.js';
+import { withRetry } from '../lib/retry.js';
 
 const DAY_SECONDS = 24 * 60 * 60;
 
@@ -21,15 +22,14 @@ async function resetSession(userId: bigint): Promise<void> {
 
 export async function grantAndNotify(ctx: BotContext, v: Verification): Promise<void> {
   const expireUnix = Math.floor(Date.now() / 1000) + DAY_SECONDS;
-  const link = await ctx.api.createChatInviteLink(env.VIP_CHANNEL_ID, {
-    member_limit: 1,
-    expire_date: expireUnix,
-  });
+  const link = await withRetry(() =>
+    ctx.api.createChatInviteLink(env.VIP_CHANNEL_ID, { member_limit: 1, expire_date: expireUnix }),
+  );
 
   await prisma.channelGrant.create({
     data: { userId: v.userId, inviteLink: link.invite_link, expiresAt: new Date(expireUnix * 1000) },
   });
-  await ctx.api.sendMessage(Number(v.userId), copy.approvedDm(link.invite_link), { parse_mode: 'HTML' });
+  await withRetry(() => ctx.api.sendMessage(Number(v.userId), copy.approvedDm(link.invite_link), { parse_mode: 'HTML' }));
   await resetSession(v.userId);
   logger.info({ userId: v.userId.toString() }, 'granted VIP access');
 }
