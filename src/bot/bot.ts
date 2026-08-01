@@ -4,14 +4,15 @@
 import { Bot, type BotConfig } from 'grammy';
 import type { BotContext } from './context.js';
 import { withSession } from './middleware/session.js';
+import { startFeature } from './handlers/start.js';
 
 export function createBot(token: string, config?: BotConfig<BotContext>): Bot<BotContext> {
   const bot = new Bot<BotContext>(token, config);
 
   bot.use(withSession);
+  bot.use(startFeature);
 
-  // Feature composers are mounted here as phases land:
-  //   bot.use(startFeature);
+  // More feature composers mount here as phases land:
   //   bot.use(onboardingFeature);
   //   bot.use(brokerFeature);
   //   ...
