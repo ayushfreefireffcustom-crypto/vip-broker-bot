@@ -32,11 +32,54 @@ class Table {
   rows: Row[] = [];
   constructor(private opts: TableOpts) {}
 
+  private static OPS = new Set(['not', 'equals', 'in', 'notIn', 'gt', 'gte', 'lt', 'lte', 'contains']);
+
+  private static matchOps(cell: unknown, ops: Row): boolean {
+    for (const [op, val] of Object.entries(ops)) {
+      switch (op) {
+        case 'not':
+          if (eq(cell, val)) return false;
+          break;
+        case 'equals':
+          if (!eq(cell, val)) return false;
+          break;
+        case 'in':
+          if (!(val as unknown[]).some((x) => eq(cell, x))) return false;
+          break;
+        case 'notIn':
+          if ((val as unknown[]).some((x) => eq(cell, x))) return false;
+          break;
+        case 'gt':
+          if (!(cell != null && (cell as number) > (val as number))) return false;
+          break;
+        case 'gte':
+          if (!(cell != null && (cell as number) >= (val as number))) return false;
+          break;
+        case 'lt':
+          if (!(cell != null && (cell as number) < (val as number))) return false;
+          break;
+        case 'lte':
+          if (!(cell != null && (cell as number) <= (val as number))) return false;
+          break;
+        case 'contains':
+          if (!String(cell ?? '').includes(String(val))) return false;
+          break;
+      }
+    }
+    return true;
+  }
+
   private match(row: Row, where: Row): boolean {
     for (const [k, v] of Object.entries(where)) {
       if (v && typeof v === 'object' && !(v instanceof Date) && !Array.isArray(v)) {
-        // Composite unique like { broker_identifier: { broker, identifier } }.
-        if (!this.match(row, v as Row)) return false;
+        const keys = Object.keys(v as Row);
+        if (keys.length > 0 && keys.every((kk) => Table.OPS.has(kk))) {
+          // Operator object like { not: null } / { in: [...] }.
+          if (!Table.matchOps(row[k], v as Row)) return false;
+        } else if (!this.match(row, v as Row)) {
+          // Composite unique like { broker_identifier: { broker, identifier } }.
+          return false;
+        }
       } else if (!eq(row[k], v)) {
         return false;
       }
