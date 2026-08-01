@@ -70,5 +70,13 @@ export const copy = {
   receivedPending: () =>
     `✅ <b>Received!</b>\n\nOur team will review your submission and get back to you shortly. You'll be notified here.`,
 
+  approvedDm: (link: string) =>
+    `🎉 <b>You're approved!</b>\n\n` +
+    `Welcome to the VIP channel. Tap to join — this link is single-use and expires in 24h:\n${link}`,
+
+  rejectedDm: () =>
+    `❌ <b>Verification not approved.</b>\n\n` +
+    `We couldn't approve your submission. If you believe this is a mistake, re-check your details and try again with /start.`,
+
   cancelled: () => `Process cancelled.`,
 };
