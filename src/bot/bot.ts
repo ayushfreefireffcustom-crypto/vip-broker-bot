@@ -4,6 +4,7 @@
 import { Bot, type BotConfig } from 'grammy';
 import type { BotContext } from './context.js';
 import { withSession } from './middleware/session.js';
+import { rateLimit } from './middleware/rate-limit.js';
 import { startFeature } from './handlers/start.js';
 import { commandsFeature } from './handlers/commands.js';
 import { onboardingFeature } from './handlers/onboarding.js';
@@ -15,6 +16,7 @@ import { adminOpsFeature } from './handlers/admin-ops.js';
 export function createBot(token: string, config?: BotConfig<BotContext>): Bot<BotContext> {
   const bot = new Bot<BotContext>(token, config);
 
+  bot.use(rateLimit); // cheap spam guard before any DB work
   bot.use(withSession);
   bot.use(adminFeature); // admin-group Approve/Reject callbacks
   bot.use(adminOpsFeature); // admin CSV upload + ops commands
