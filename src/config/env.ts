@@ -31,6 +31,11 @@ const schema = z.object({
   HELP_IMAGE_EXNESS: z.string().default(''),
   HELP_IMAGE_XM: z.string().default(''),
 
+  // Our partner/referral links, sent when a user isn't found under our link.
+  REF_LINK_VANTAGE: z.string().default(''),
+  REF_LINK_EXNESS: z.string().default(''),
+  REF_LINK_XM: z.string().default(''),
+
   // Brand + logging
   BRAND_NAME: z.string().min(1).default('VIP Access'),
   LOG_LEVEL: z.string().default('info'),
