@@ -21,6 +21,7 @@ export function completeOnboarding(id: bigint, phone: string) {
   return prisma.botUser.update({ where: { id }, data: { phone, onboardedAt: new Date() } });
 }
 
-export function setContactShared(id: bigint) {
-  return prisma.botUser.update({ where: { id }, data: { contactShared: true } });
+/** Record the Telegram-shared contact: mark shared + store the authoritative phone. */
+export function saveSharedContact(id: bigint, phone: string) {
+  return prisma.botUser.update({ where: { id }, data: { contactShared: true, phone } });
 }
