@@ -46,7 +46,8 @@ describe('identifier collection', () => {
     await bot.handleUpdate(textUpdate('Me@Example.COM', u));
 
     expect(fakePrisma.funnelSession.findUnique({ where: { userId: 72n } })?.identifier).toBe('me@example.com');
-    expect(lastText(calls).toLowerCase()).toContain('checking');
+    // A "checking" message is emitted before the verification outcome.
+    expect(calls.some((c) => c.method === 'sendMessage' && /checking/i.test(c.payload.text))).toBe(true);
   });
 
   it('rejects an invalid email without storing it', async () => {
