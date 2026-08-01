@@ -10,12 +10,14 @@ import { onboardingFeature } from './handlers/onboarding.js';
 import { brokerFeature } from './handlers/broker.js';
 import { contactScreenshotFeature } from './handlers/contact-screenshot.js';
 import { adminFeature } from './handlers/admin.js';
+import { adminOpsFeature } from './handlers/admin-ops.js';
 
 export function createBot(token: string, config?: BotConfig<BotContext>): Bot<BotContext> {
   const bot = new Bot<BotContext>(token, config);
 
   bot.use(withSession);
   bot.use(adminFeature); // admin-group Approve/Reject callbacks
+  bot.use(adminOpsFeature); // admin CSV upload + ops commands
   bot.use(startFeature);
   bot.use(commandsFeature); // /cancel — must interrupt from any state
   bot.use(onboardingFeature);
