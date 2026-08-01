@@ -25,3 +25,10 @@ export function decisionLine(status: 'approved' | 'rejected', adminId: bigint): 
   const verb = status === 'approved' ? '✅ APPROVED' : '❌ REJECTED';
   return `\n\n${verb} by <a href="tg://user?id=${adminId}">admin</a>`;
 }
+
+export const adminCsvNameHint = (): string =>
+  'Please name the file <code>vantage.csv</code>, <code>exness.csv</code> or <code>xm.csv</code> so I know which broker it belongs to.';
+
+export const adminCsvIngested = (label: string, n: number): string => `✅ Synced <b>${label}</b> — ${n} client(s) updated.`;
+
+export const adminCsvDownloadFailed = (): string => 'Could not download that file. Please try again.';
