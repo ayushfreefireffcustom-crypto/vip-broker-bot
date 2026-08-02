@@ -58,14 +58,40 @@ Admins (Telegram ids in `ADMIN_IDS`) operate from the admin group:
 a mock that intercepts outgoing Telegram API calls and an in-memory Prisma fake, so
 no live token or database is needed. `test/e2e.test.ts` walks the whole funnel.
 
-## Deploy
+## Deploy (Railway — always-on)
 
-Runs as **two processes** (e.g. two Railway services sharing one Postgres):
+Runs as **two services from this one repo**, sharing the Neon Postgres:
 
-- `pnpm bot` — the bot (set `BOT_MODE=webhook` + `WEBHOOK_DOMAIN` in prod).
-- `pnpm sync` — the referred-clients sync worker (on the VPS with portal access).
+| Service | Start command | Notes |
+|---------|---------------|-------|
+| **bot** | `pnpm start:bot` | runs `prisma migrate deploy` then the bot; serves `/health`, `/webhook`, `/ingest/*` |
+| **sync** | `pnpm start:sync` | the referred-clients sync worker (only needed for the CSV/scrape source) |
 
-Apply migrations with `pnpm db:deploy`. Migrations are **additive only**.
+Steps:
+1. Push this repo to GitHub, then in Railway **New Project → Deploy from repo**.
+2. It auto-detects `railway.json` (Nixpacks build, `/health` check). This first service is the **bot**.
+3. Add the env vars (below). Set **`BOT_MODE=webhook`** and **`WEBHOOK_DOMAIN=https://<your-service>.up.railway.app`** (Railway gives the domain — generate one under Settings → Networking). Railway injects `PORT` automatically.
+4. **Add a second service** from the same repo for the worker: set its start command to `pnpm start:sync`.
+5. Point both at the same `DATABASE_URL` / `DIRECT_URL`.
+
+**Required env vars:** `BOT_TOKEN`, `VIP_CHANNEL_ID`, `ADMIN_GROUP_ID`, `ADMIN_IDS`, `DATABASE_URL`, `DIRECT_URL`.
+**Recommended:** `BOT_MODE=webhook`, `WEBHOOK_DOMAIN`, `INGEST_TOKEN`, `BRAND_NAME`.
+**Optional:** `REF_LINK_*`, `HELP_IMAGE_*`, `INTRO_VIDEO`, eligibility overrides.
+
+Migrations run automatically on the bot's deploy (`start:bot`). They are **additive only**.
+
+## Real-time ingest (broker feed)
+
+Once you have partner API/postback access, point each broker's postback at:
+
+```
+POST https://<domain>/ingest/<broker>     # <broker> = vantage | exness | xm
+Header: x-ingest-token: <INGEST_TOKEN>     (or ?token=<INGEST_TOKEN>)
+Body:   {"identifier":"...","deposits":123,"volumeLots":0.4}   # or an array
+```
+
+Field names are flexible (uid/email/account, deposit/funded, lots/volume). This
+upserts `referred_client` in real time — no CSV, no scraping.
 
 ## Constraints
 
