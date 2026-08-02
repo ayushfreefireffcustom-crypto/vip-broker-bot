@@ -128,6 +128,20 @@ export function documentUpdate(fileId: string, fileName: string, from: User = us
   };
 }
 
+export function forwardedChannelUpdate(channelId: number, title: string, from: User = user(1)): Update {
+  return {
+    update_id: updateSeq++,
+    message: {
+      message_id: ++msgSeq,
+      date: Math.floor(Date.now() / 1000),
+      chat: privateChat(from),
+      from,
+      text: 'forwarded',
+      forward_origin: { type: 'channel', date: 0, chat: { id: channelId, type: 'channel', title }, message_id: 1 },
+    },
+  };
+}
+
 export function callbackUpdate(data: string, from: User = user(1)): Update {
   return {
     update_id: updateSeq++,
