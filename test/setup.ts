@@ -10,3 +10,4 @@ process.env.ADMIN_IDS ||= '111';
 process.env.MIN_DEPOSIT_USD ||= '100';
 process.env.MIN_VOLUME_LOTS ||= '0.1';
 process.env.BRAND_NAME ||= 'VIP Access';
+process.env.INGEST_TOKEN ||= 'test-ingest-token';

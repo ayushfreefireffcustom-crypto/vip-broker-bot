@@ -29,6 +29,10 @@ const schema = z.object({
   SYNC_CSV_DIR: z.string().default('./data'),
   SYNC_INTERVAL_MINUTES: z.coerce.number().int().positive().default(30),
 
+  // Shared secret for the /ingest/<broker> webhook (broker API / Cellxpert / XM
+  // postbacks POST here). Empty = endpoint disabled.
+  INGEST_TOKEN: z.string().default(''),
+
   // Rate limiting (per user) + stalled-funnel reminders.
   RATE_WINDOW_MS: z.coerce.number().int().positive().default(10_000),
   RATE_MAX: z.coerce.number().int().positive().default(12),
