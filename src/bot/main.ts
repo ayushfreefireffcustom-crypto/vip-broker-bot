@@ -1,6 +1,7 @@
 // Bot entry point. Long-polling in dev, webhook in prod (both behind a small http
 // server that also answers /health for the platform's health check). Graceful
 // shutdown drains the bot and disconnects Prisma.
+import '../load-env.js'; // must be first — populates process.env before config loads
 import { createServer } from 'node:http';
 import { webhookCallback } from 'grammy';
 import { env } from '../config/env.js';

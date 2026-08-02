@@ -1,5 +1,6 @@
 // Sync worker entry point. Runs once on start, then on an interval. Meant to run
 // as its own process (on the VPS), separate from the bot.
+import '../load-env.js'; // must be first — populates process.env before config loads
 import { env } from '../config/env.js';
 import { logger } from '../lib/logger.js';
 import { prisma } from '../db/prisma.js';
