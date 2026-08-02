@@ -3,6 +3,7 @@
 // users go straight to the broker menu.
 import { Composer, InlineKeyboard } from 'grammy';
 import type { BotContext } from '../context.js';
+import { env } from '../../config/env.js';
 import { State } from '../flows/state.js';
 import { copy } from '../copy.js';
 import { getUser } from '../../services/users.js';
@@ -25,6 +26,14 @@ startFeature.command('start', async (ctx) => {
 
 startFeature.callbackQuery('start_verify', async (ctx) => {
   await ctx.answerCallbackQuery();
+  // First-run tutorial video (matches the original bot), if configured.
+  if (env.INTRO_VIDEO) {
+    try {
+      await ctx.replyWithVideo(env.INTRO_VIDEO);
+    } catch {
+      /* bad file_id/URL — skip the video, don't block onboarding */
+    }
+  }
   ctx.session.state = State.OnboardingName;
   await ctx.reply(copy.askName(), { parse_mode: 'HTML' });
 });

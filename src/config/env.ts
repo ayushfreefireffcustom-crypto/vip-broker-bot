@@ -35,6 +35,10 @@ const schema = z.object({
   STALE_FUNNEL_MINUTES: z.coerce.number().int().positive().default(120),
   REMINDER_INTERVAL_MINUTES: z.coerce.number().int().positive().default(60),
 
+  // Optional first-run tutorial video (file_id or https URL) shown once, right
+  // after a new user taps "Start Verification" (matches the original bot). Empty = skip.
+  INTRO_VIDEO: z.string().default(''),
+
   // Optional per-broker helper images (file_id or https URL) shown when a user
   // picks a broker — "where to find your UID/email". Empty = send a text prompt.
   HELP_IMAGE_VANTAGE: z.string().default(''),
