@@ -1,5 +1,8 @@
-# Single-package repo. As of pnpm 10+ the build-script allowlist lives here
-# (moved out of package.json). Prisma/esbuild need their postinstall to build engines.
+# Single-package repo. `packages` keeps pnpm 9 (some CI/build images) from erroring
+# "packages field missing or empty"; `allowBuilds` is the pnpm 10+ build-script
+# allowlist (Prisma/esbuild need their postinstall).
+packages:
+  - '.'
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
