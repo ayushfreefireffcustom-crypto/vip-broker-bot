@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "description": "Telegram VIP broker-verification funnel bot",
-  "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": ">=20"
   },

@@ -1,0 +1,5 @@
+# Railway/Nixpacks build overrides.
+# - Use Nixpacks' own pnpm (no `packageManager` field, so no buggy corepack path).
+# - Relax the lockfile check so a pnpm-9-vs-11 minor mismatch can't fail the install.
+[phases.install]
+cmds = ["pnpm install --no-frozen-lockfile"]
